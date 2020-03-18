@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        android:background="@drawable/layout_border" >
+        <CheckBox
+            android:id="@+id/debug_landmark_checkbox"
+            android:layout_below="@+id/recording_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="5dp"
+            android:onClick="onClickButtons"
+            android:text="face landmark"/>
+        <CheckBox
+            android:id="@+id/debug_rect_checkbox"
+            android:layout_below="@+id/recording_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"
+            android:onClick="onClickButtons"
+            android:text="face rect"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="5dp"
+            android:textStyle="bold"
+            android:text="Camera Ratio" />
+        <RadioGroup
+            android:id="@+id/camera_ratio_radiogroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="5dp">
+            <RadioButton
+                android:id="@+id/ratio_full_radiobutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onClickButtons"
+                android:text="FULL" />
+            <RadioButton
+                android:id="@+id/ratio43_radiobugtton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:onClick="onClickButtons"
+                android:text="4:3" />
+            <RadioButton
+                android:id="@+id/ratio11_radiobutton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onClickButtons"
+                android:text="1:1" />
+        </RadioGroup>
+    </LinearLayout>
+</layout>
