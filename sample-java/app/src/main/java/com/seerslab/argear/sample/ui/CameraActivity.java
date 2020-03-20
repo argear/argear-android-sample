@@ -78,7 +78,7 @@ public class CameraActivity extends AppCompatActivity{
     private GLView mGlView;
     private ScreenRenderer mScreenRenderer;
     private CameraTexture mCameraTexture;
-    private int mCameraRatio = AppConfig.CAMERA_RATIO_4_3;
+    private ARGFrame.Ratio mScreenRatio = ARGFrame.Ratio.RATIO_4_3;
 
     private String mItemDownloadPath;
     private String mMediaPath;
@@ -242,11 +242,11 @@ public class CameraActivity extends AppCompatActivity{
     }
 
     private void initRatioUI() {
-        if (mCameraRatio == AppConfig.CAMERA_RATIO_FULL) {
+        if (mScreenRatio == ARGFrame.Ratio.RATIO_FULL) {
             // full
             mDataBinding.topRatioView.setVisibility(View.INVISIBLE);
             mDataBinding.bottomRatioView.setVisibility(View.INVISIBLE);
-        } else if (mCameraRatio == AppConfig.CAMERA_RATIO_4_3) {
+        } else if (mScreenRatio == ARGFrame.Ratio.RATIO_4_3) {
             // 3 : 4
             mDataBinding.bottomRatioView.setY((mDeviceWidth * 4) / 3);
             mDataBinding.bottomRatioView.getLayoutParams().height = mDeviceHeight - ((mDeviceWidth * 4) / 3);
@@ -254,7 +254,7 @@ public class CameraActivity extends AppCompatActivity{
             mDataBinding.bottomRatioView.setVisibility(View.VISIBLE);
         } else {
             // 1 : 1
-            int viewTopRation_H = findViewById(R.id.more_button).getHeight();
+            int viewTopRation_H = (((mDeviceWidth * 4) / 3) - mDeviceWidth) / 2;
             mDataBinding.topRatioView.getLayoutParams().height = viewTopRation_H;
             mDataBinding.bottomRatioView.setY(viewTopRation_H + mDeviceWidth);
             mDataBinding.bottomRatioView.getLayoutParams().height = mDeviceHeight - viewTopRation_H + mDeviceWidth;
@@ -271,7 +271,7 @@ public class CameraActivity extends AppCompatActivity{
         }
 
         if (mBeautyFragment != null && mBeautyFragment.isAdded()) {
-            mBeautyFragment.updateUIStyle(mCameraRatio);
+            mBeautyFragment.updateUIStyle(mScreenRatio);
         }
     }
 
@@ -304,17 +304,17 @@ public class CameraActivity extends AppCompatActivity{
                 break;
             }
             case R.id.ratio_full_radiobutton:
-                mCameraRatio = AppConfig.CAMERA_RATIO_FULL;
+                mScreenRatio = ARGFrame.Ratio.RATIO_FULL;
                 setGLViewSize(mCamera.getPreviewSize());
                 initRatioUI();
                 break;
             case R.id.ratio43_radiobugtton:
-                mCameraRatio = AppConfig.CAMERA_RATIO_4_3;
+                mScreenRatio = ARGFrame.Ratio.RATIO_4_3;
                 setGLViewSize(mCamera.getPreviewSize());
                 initRatioUI();
                 break;
             case R.id.ratio11_radiobutton:
-                mCameraRatio = AppConfig.CAMERA_RATIO_1_1;
+                mScreenRatio = ARGFrame.Ratio.RATIO_1_1;
                 setGLViewSize(mCamera.getPreviewSize());
                 initRatioUI();
                 break;
@@ -372,7 +372,7 @@ public class CameraActivity extends AppCompatActivity{
         int previewWidth = cameraPreviewSize[1];
         int previewHeight = cameraPreviewSize[0];
 
-        if (mCameraRatio == AppConfig.CAMERA_RATIO_FULL) {
+        if (mScreenRatio == ARGFrame.Ratio.RATIO_FULL) {
             mGLViewHeight = mDeviceHeight;
             mGLViewWidth = (int) ((float) mDeviceHeight * previewWidth / previewHeight );
         } else {
@@ -396,7 +396,7 @@ public class CameraActivity extends AppCompatActivity{
         }
 
         /* to align center */
-        if ((mCameraRatio == AppConfig.CAMERA_RATIO_FULL) && (mGLViewWidth > mDeviceWidth)) {
+        if ((mScreenRatio == ARGFrame.Ratio.RATIO_FULL) && (mGLViewWidth > mDeviceWidth)) {
             view.setX((mDeviceWidth - mGLViewWidth) / 2);
         } else {
             view.setX(0);
@@ -475,7 +475,7 @@ public class CameraActivity extends AppCompatActivity{
         mARGSession.contents().clear(ARGContents.Type.ARGItem);
 
         Bundle args = new Bundle();
-        args.putInt(BeautyFragment.BEAUTY_PARAM1, mCameraRatio);
+        args.putSerializable(BeautyFragment.BEAUTY_PARAM1, mScreenRatio);
         mBeautyFragment.setArguments(args);
         showSlot(mBeautyFragment);
     }
@@ -651,9 +651,9 @@ public class CameraActivity extends AppCompatActivity{
         mIsShooting = false;
 
         ARGMedia.Ratio ratio;
-        if (mCameraRatio == AppConfig.CAMERA_RATIO_FULL) {
+        if (mScreenRatio == ARGFrame.Ratio.RATIO_FULL) {
             ratio = ARGMedia.Ratio.RATIO_16_9;
-        } else if (mCameraRatio == AppConfig.CAMERA_RATIO_4_3) {
+        } else if (mScreenRatio == ARGFrame.Ratio.RATIO_4_3) {
             ratio = ARGMedia.Ratio.RATIO_4_3;
         } else {
             ratio = ARGMedia.Ratio.RATIO_1_1;
@@ -666,7 +666,7 @@ public class CameraActivity extends AppCompatActivity{
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(CameraActivity.this, "captured a photo.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(CameraActivity.this, "The file has been saved to your Gallery.", Toast.LENGTH_SHORT).show();
 
                 Intent intent = new Intent(CameraActivity.this, ImageViewerActivity.class);
                 Bundle b = new Bundle();
@@ -685,9 +685,9 @@ public class CameraActivity extends AppCompatActivity{
         int bitrate = 10 * 1000 * 1000; // 10M
 
         ARGMedia.Ratio ratio;
-        if (mCameraRatio == AppConfig.CAMERA_RATIO_FULL) {
+        if (mScreenRatio == ARGFrame.Ratio.RATIO_FULL) {
             ratio = ARGMedia.Ratio.RATIO_16_9;
-        } else if (mCameraRatio == AppConfig.CAMERA_RATIO_4_3) {
+        } else if (mScreenRatio == ARGFrame.Ratio.RATIO_4_3) {
             ratio = ARGMedia.Ratio.RATIO_4_3;
         } else {
             ratio = ARGMedia.Ratio.RATIO_1_1;
@@ -712,7 +712,7 @@ public class CameraActivity extends AppCompatActivity{
             public void run() {
                 sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://"+mVideoFilePath)));
 
-                Toast.makeText(CameraActivity.this, "stop recording.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(CameraActivity.this, "The file has been saved to your Gallery.", Toast.LENGTH_SHORT).show();
 
                 Intent intent = new Intent(CameraActivity.this, PlayerActivity.class);
                 Bundle b = new Bundle();
@@ -811,7 +811,7 @@ public class CameraActivity extends AppCompatActivity{
                 mCamera.setCameraTexture(mCameraTexture.getTextureId(), mCameraTexture.getSurfaceTexture());
             }
 
-            ARGFrame frame = mARGSession.drawFrame(gl, width, height);
+            ARGFrame frame = mARGSession.drawFrame(gl, mScreenRatio, width, height);
             mScreenRenderer.draw(frame, width, height);
 
             if (mHasTrigger) updateTriggerStatus(frame.getItemTriggerFlag());

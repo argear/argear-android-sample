@@ -11,7 +11,7 @@ class AppConfig {
         @JvmField
         val SECRET_KEY = "5c3b1c9540b4d76134596fd3e9acb2a1aef55245a9980fdd26064ea6b8c5c48c"
         @JvmField
-        val AUTH_KEY = "U2FsdGVkX1+Tf2Zzn0Eq/vSbDF2TtyHNnJJEzwqZ0kAzx2OpN7olovPzQRdGUQbeJZO4f8x+LC+8rGkZGt5dAQ=="
+        val AUTH_KEY = "U2FsdGVkX1+k8JjhmPLPROT1F7wdSAiW08DhJymQnqpYdU/VaaSR5BwYgLzfiRsS2LXFf1YXCjfryqzIo4/M0g=="
 
         // preference
         @JvmField
@@ -26,17 +26,26 @@ class AppConfig {
         @JvmField
         val USE_CAMERA_API = 1
 
-        // camera ratio
-        @JvmField
-        val CAMERA_RATIO_FULL = 0
-        @JvmField
-        val CAMERA_RATIO_4_3 = 1
-        @JvmField
-        val CAMERA_RATIO_1_1 = 2
-
         // region - beauty sample
         @JvmField
-        val BEAUTY_TYPE_INIT_VALUE = floatArrayOf(10f, 90f, 55f, -50f, 5f, -10f, 0f, 35f, 30f, -35f, 0f, 0f, 0f, 50f, 0f, 0f)
+        val BEAUTY_TYPE_INIT_VALUE = floatArrayOf(
+            10f,     //VLINE
+            90f,     //ACE_SLIM
+            55f,     //JAW
+            -50f,    //CHIN
+            5f,      //EYE
+            -10f,    //EYE_GAP
+            0f,      //NOSE_LINE
+            35f,     //NOSE_SIDE
+            30f,     //NOSE_LENGTH
+            -35f,    //MOUTH_SIZE
+            0f,      //EYE_BACK
+            0f,      //EYE_CORNER
+            0f,      //LIP_SIZE
+            50f,     //SKIN
+            0f,      //DARK_CIRCLE
+            0f       //MOUTH_WRINKLE
+        )
 
         @JvmField
         val BASIC_BEAUTY_1 = floatArrayOf(20f, 10f, 45f, 45f, 5f, -10f, 40f, 20f, 15f, 0f, 0f, 0f, 0f, 50f, 0f, 0f)

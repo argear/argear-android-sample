@@ -369,7 +369,7 @@ public class CameraActivity extends AppCompatActivity implements GLSurfaceView.R
         mARGSession.contents().clear(ARGContents.Type.ARGItem);
 
         Bundle args = new Bundle();
-        args.putInt(BeautyFragment.BEAUTY_PARAM1, AppConfig.CAMERA_RATIO_FULL);
+        args.putSerializable(BeautyFragment.BEAUTY_PARAM1, ARGFrame.Ratio.RATIO_FULL);
         mBeautyFragment.setArguments(args);
         showSlot(mBeautyFragment);
     }
@@ -726,7 +726,7 @@ public class CameraActivity extends AppCompatActivity implements GLSurfaceView.R
             mARGSession.applyAdditionalFaceInfo(verticesList, poseMatrixList, mProjectionMatrix, mViewMatrix);
             mARGSession.feedTexture(mARCoreSession.getTextureId(), mTextureSize);
 
-            ARGFrame argFrame = mARGSession.drawFrame(gl, mScreenWidth, mScreenHeight);
+            ARGFrame argFrame = mARGSession.drawFrame(gl, ARGFrame.Ratio.RATIO_FULL, mScreenWidth, mScreenHeight);
             mScreenRenderer.draw(argFrame, mScreenWidth, mScreenHeight, mTextureSize.getWidth(), mTextureSize.getHeight());
 
             if (mHasTrigger) updateTriggerStatus(argFrame.getItemTriggerFlag());

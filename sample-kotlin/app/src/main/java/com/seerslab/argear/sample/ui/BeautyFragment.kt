@@ -21,6 +21,7 @@ import com.seerslab.argear.sample.databinding.FragmentBeautyBinding
 import com.seerslab.argear.sample.ui.adapter.BeautyListAdapter
 import com.seerslab.argear.session.ARGContents
 import com.seerslab.argear.session.ARGContents.BeautyType
+import com.seerslab.argear.session.ARGFrame
 import java.util.*
 
 class BeautyFragment : Fragment(),
@@ -35,13 +36,13 @@ class BeautyFragment : Fragment(),
     private lateinit var beautyListAdapter: BeautyListAdapter
     private var beautyItemData: BeautyItemData? = null
     private var currentBeautyType = BeautyType.VLINE
-    private var cameraRatio: Int = 0
+    private var screenRatio: ARGFrame.Ratio = ARGFrame.Ratio.RATIO_4_3
 
     private lateinit var rootView: FragmentBeautyBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        cameraRatio = arguments?.getInt(BEAUTY_PARAM1) ?: 0
+        screenRatio = arguments?.getSerializable(BEAUTY_PARAM1) as ARGFrame.Ratio? ?: ARGFrame.Ratio.RATIO_4_3
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -97,7 +98,7 @@ class BeautyFragment : Fragment(),
         beautyListAdapter.setData(beautyItemData?.getItemInfoData())
         beautyListAdapter.selectItem(BeautyType.VLINE)
 
-        updateUIStyle(cameraRatio)
+        updateUIStyle(screenRatio)
         onBeautyItemSelected(BeautyType.VLINE)
         reloadBeauty()
     }
@@ -132,8 +133,8 @@ class BeautyFragment : Fragment(),
         rootView.beautySeekbar.progress = beautyItemData?.getBeautyValue(beautyType)?.toInt() ?: 0
     }
 
-    override fun onGLViewRatio(): Int {
-        return cameraRatio
+    override fun onGLViewRatio(): ARGFrame.Ratio {
+        return screenRatio
     }
 
     private fun updateBeautyInfoPosition(view: TextView?, progress: Int) {
@@ -161,9 +162,9 @@ class BeautyFragment : Fragment(),
         (activity as CameraActivity).setBeauty(beautyItemData?.getBeautyValues())
     }
 
-    fun updateUIStyle(ratio: Int) {
-        cameraRatio = ratio
-        if (ratio == AppConfig.CAMERA_RATIO_FULL) {
+    fun updateUIStyle(ratio: ARGFrame.Ratio) {
+        screenRatio = ratio
+        if (ratio == ARGFrame.Ratio.RATIO_FULL) {
             rootView.beautySeekbar.isActivated = false
             rootView.beautyLevelInfo.isActivated = false
             rootView.beautyLevelInfo.setTextColor(Color.BLACK)

@@ -6,7 +6,7 @@ public class AppConfig {
     public static final String API_URL = "https://apis.argear.io";
     public static final String API_KEY = "fe49fe8fe8c757e5a4f8d48d";
     public static final String SECRET_KEY = "5c3b1c9540b4d76134596fd3e9acb2a1aef55245a9980fdd26064ea6b8c5c48c";
-    public static final String AUTH_KEY = "U2FsdGVkX1+Tf2Zzn0Eq/vSbDF2TtyHNnJJEzwqZ0kAzx2OpN7olovPzQRdGUQbeJZO4f8x+LC+8rGkZGt5dAQ==";
+    public static final String AUTH_KEY = "U2FsdGVkX1+k8JjhmPLPROT1F7wdSAiW08DhJymQnqpYdU/VaaSR5BwYgLzfiRsS2LXFf1YXCjfryqzIo4/M0g==";
 
     // preference
     public static final String USER_PREF_NAME = BuildConfig.APPLICATION_ID + ".Preference";
@@ -16,12 +16,6 @@ public class AppConfig {
     // camera
     // 1: CAMERA_API_1, 2: CAMERA_API_2
     public static final int USE_CAMERA_API = 1;
-
-    // camera ratio
-    public static final int CAMERA_RATIO_FULL = 0;
-    public static final int CAMERA_RATIO_4_3 = 1;
-    public static final int CAMERA_RATIO_1_1 = 2;
-
 
     // region - beauty sample
     public static final float[] BEAUTY_TYPE_INIT_VALUE = {

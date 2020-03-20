@@ -11,6 +11,7 @@ import com.seerslab.argear.sample.AppConfig;
 import com.seerslab.argear.session.ARGContents;
 import com.seerslab.argear.sample.R;
 import com.seerslab.argear.sample.data.BeautyItemData;
+import com.seerslab.argear.session.ARGFrame;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ public class BeautyListAdapter extends RecyclerView.Adapter<BeautyListAdapter.Vi
 
     public interface Listener {
         void onBeautyItemSelected(ARGContents.BeautyType beautyType);
-        int getViewRatio();
+        ARGFrame.Ratio getViewRatio();
     }
 
     private BeautyListAdapter.Listener mListener;
@@ -92,7 +93,7 @@ public class BeautyListAdapter extends RecyclerView.Adapter<BeautyListAdapter.Vi
         void bind(int position) {
             mInfo = mData.get(position);
 
-            if (mListener.getViewRatio() == AppConfig.CAMERA_RATIO_FULL) {
+            if (mListener.getViewRatio() == ARGFrame.Ratio.RATIO_FULL) {
                 if (mSelectedIndex == position) {
                     mItemButton.setBackgroundResource(mInfo.mResource2);
                 } else {
@@ -111,7 +112,7 @@ public class BeautyListAdapter extends RecyclerView.Adapter<BeautyListAdapter.Vi
 
         @Override
         public void onClick(View v) {
-            if (mListener.getViewRatio() == AppConfig.CAMERA_RATIO_FULL) {
+            if (mListener.getViewRatio() == ARGFrame.Ratio.RATIO_FULL) {
                 mItemButton.setBackgroundResource(mInfo.mResource2);
             } else {
                 mItemButton.setBackgroundResource(mInfo.mResource1);

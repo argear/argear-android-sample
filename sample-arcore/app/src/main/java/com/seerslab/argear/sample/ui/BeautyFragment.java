@@ -22,6 +22,7 @@ import com.seerslab.argear.sample.R;
 import com.seerslab.argear.sample.data.BeautyItemData;
 import com.seerslab.argear.sample.ui.adapter.BeautyListAdapter;
 import com.seerslab.argear.sample.ui.widget.CustomSeekBar;
+import com.seerslab.argear.session.ARGFrame;
 
 import java.util.Locale;
 
@@ -40,13 +41,13 @@ public class BeautyFragment
     private BeautyItemData mBeautyItemData;
     private ARGContents.BeautyType mCurrentBeautyType = ARGContents.BeautyType.VLINE;
 
-    private int mCameraRatio;
+    private ARGFrame.Ratio mScreenRatio;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mCameraRatio = getArguments().getInt(BEAUTY_PARAM1);
+        mScreenRatio = (ARGFrame.Ratio) getArguments().getSerializable(BEAUTY_PARAM1);
     }
 
     @Nullable
@@ -87,7 +88,7 @@ public class BeautyFragment
         mBeautyListAdapter.setData(mBeautyItemData.getItemInfoData());
         mBeautyListAdapter.selectItem(ARGContents.BeautyType.VLINE);
 
-        updateUIStyle(mCameraRatio);
+        updateUIStyle(mScreenRatio);
 
         onBeautyItemSelected(ARGContents.BeautyType.VLINE);
 
@@ -148,8 +149,8 @@ public class BeautyFragment
     }
 
     @Override
-    public int getViewRatio() {
-        return mCameraRatio;
+    public ARGFrame.Ratio getViewRatio() {
+        return mScreenRatio;
     }
 
     private void zeroBeautyParam() {
@@ -160,9 +161,9 @@ public class BeautyFragment
         ((CameraActivity) getActivity()).setBeauty(mBeautyItemData.getBeautyValues());
     }
 
-    public void updateUIStyle(int ratio) {
-        mCameraRatio = ratio;
-        if (ratio == AppConfig.CAMERA_RATIO_FULL) {
+    public void updateUIStyle(ARGFrame.Ratio ratio) {
+        mScreenRatio = ratio;
+        if (ratio == ARGFrame.Ratio.RATIO_FULL) {
             mBeautySeekBar.setActivated(false);
             mBeautyLevelInfo.setActivated(false);
             mBeautyLevelInfo.setTextColor(Color.BLACK);

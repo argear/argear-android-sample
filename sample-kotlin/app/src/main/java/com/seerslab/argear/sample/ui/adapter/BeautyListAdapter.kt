@@ -9,6 +9,7 @@ import com.seerslab.argear.sample.AppConfig
 import com.seerslab.argear.sample.R
 import com.seerslab.argear.sample.data.BeautyItemData
 import com.seerslab.argear.session.ARGContents.BeautyType
+import com.seerslab.argear.session.ARGFrame
 import java.util.*
 
 class BeautyListAdapter(private val listListener: Listener?) :
@@ -19,7 +20,7 @@ class BeautyListAdapter(private val listListener: Listener?) :
 
     interface Listener {
         fun onBeautyItemSelected(beautyType: BeautyType?)
-        fun onGLViewRatio(): Int
+        fun onGLViewRatio(): ARGFrame.Ratio
     }
 
     override fun getItemCount(): Int {
@@ -78,7 +79,7 @@ class BeautyListAdapter(private val listListener: Listener?) :
         override fun bind(position: Int) {
             itemInfo = adapterData[position]
 
-            if (listListener?.onGLViewRatio() == AppConfig.CAMERA_RATIO_FULL) {
+            if (listListener?.onGLViewRatio() == ARGFrame.Ratio.RATIO_FULL) {
                 if (selectedIndex == position) {
                     itemButton.setBackgroundResource(itemInfo.resource2)
                 } else {
@@ -96,7 +97,7 @@ class BeautyListAdapter(private val listListener: Listener?) :
         }
 
         override fun onClick(v: View) {
-            if (listListener?.onGLViewRatio() == AppConfig.CAMERA_RATIO_FULL) {
+            if (listListener?.onGLViewRatio() == ARGFrame.Ratio.RATIO_FULL) {
                 itemButton.setBackgroundResource(itemInfo.resource2)
             } else {
                 itemButton.setBackgroundResource(itemInfo.resource1)

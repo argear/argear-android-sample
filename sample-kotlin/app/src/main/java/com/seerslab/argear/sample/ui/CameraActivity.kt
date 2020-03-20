@@ -41,12 +41,9 @@ import com.seerslab.argear.sample.util.FileDeleteAsyncTask
 import com.seerslab.argear.sample.util.FileDeleteAsyncTask.OnAsyncFileDeleteListener
 import com.seerslab.argear.sample.util.PreferenceUtil
 import com.seerslab.argear.sample.viewmodel.ContentsViewModel
-import com.seerslab.argear.session.ARGAuth
-import com.seerslab.argear.session.ARGContents
+import com.seerslab.argear.session.*
 import com.seerslab.argear.session.ARGContents.BulgeType
-import com.seerslab.argear.session.ARGMedia
 import com.seerslab.argear.session.ARGMedia.Ratio
-import com.seerslab.argear.session.ARGSession
 import com.seerslab.argear.session.config.ARGCameraConfig
 import com.seerslab.argear.session.config.ARGConfig
 import com.seerslab.argear.session.config.ARGInferenceConfig
@@ -67,7 +64,7 @@ class CameraActivity : AppCompatActivity() {
     private lateinit var screenRenderer: ScreenRenderer
     private lateinit var cameraTexture: CameraTexture
 
-    private var cameraRatio: Int = AppConfig.CAMERA_RATIO_4_3
+    private var screenRatio: ARGFrame.Ratio = ARGFrame.Ratio.RATIO_4_3
 
     private var itemDownloadPath: String? = null
     private var mediaPath: String? = null
@@ -240,16 +237,16 @@ class CameraActivity : AppCompatActivity() {
     }
 
     private fun initRatioUI() {
-        if (cameraRatio == AppConfig.CAMERA_RATIO_FULL) { // full
+        if (screenRatio == ARGFrame.Ratio.RATIO_FULL) { // full
             dataBinding.topRatioView.visibility = View.INVISIBLE
             dataBinding.bottomRatioView.visibility = View.INVISIBLE
-        } else if (cameraRatio == AppConfig.CAMERA_RATIO_4_3) { // 3 : 4
+        } else if (screenRatio == ARGFrame.Ratio.RATIO_4_3) { // 3 : 4
             dataBinding.bottomRatioView.y = deviceWidth.toFloat() * 4 / 3
             dataBinding.bottomRatioView.layoutParams.height = deviceHeight - deviceWidth * 4 / 3
             dataBinding.topRatioView.visibility = View.INVISIBLE
             dataBinding.bottomRatioView.visibility = View.VISIBLE
         } else { // 1 : 1
-            val viewTopRationHeight = dataBinding.moreButton.height
+            val viewTopRationHeight = (((deviceWidth * 4) / 3) - deviceWidth) / 2
             dataBinding.topRatioView.layoutParams.height = viewTopRationHeight
             dataBinding.bottomRatioView.y = viewTopRationHeight + deviceWidth.toFloat()
             dataBinding.bottomRatioView.layoutParams.height = deviceHeight - viewTopRationHeight + deviceWidth
@@ -266,7 +263,7 @@ class CameraActivity : AppCompatActivity() {
         }
 
         if (beautyFragment.isAdded) {
-            beautyFragment.updateUIStyle(cameraRatio)
+            beautyFragment.updateUIStyle(screenRatio)
         }
     }
 
@@ -307,17 +304,17 @@ class CameraActivity : AppCompatActivity() {
                 }
             }
             R.id.ratio_full_radiobutton -> {
-                cameraRatio = AppConfig.CAMERA_RATIO_FULL
+                screenRatio = ARGFrame.Ratio.RATIO_FULL
                 setGLViewSize(camera.previewSize)
                 initRatioUI()
             }
             R.id.ratio43_radiobugtton -> {
-                cameraRatio = AppConfig.CAMERA_RATIO_4_3
+                screenRatio = ARGFrame.Ratio.RATIO_4_3
                 setGLViewSize(camera.previewSize)
                 initRatioUI()
             }
             R.id.ratio11_radiobutton -> {
-                cameraRatio = AppConfig.CAMERA_RATIO_1_1
+                screenRatio = ARGFrame.Ratio.RATIO_1_1
                 setGLViewSize(camera.previewSize)
                 initRatioUI()
             }
@@ -365,7 +362,7 @@ class CameraActivity : AppCompatActivity() {
         val previewWidth = cameraPreviewSize[1]
         val previewHeight = cameraPreviewSize[0]
 
-        if (cameraRatio == AppConfig.CAMERA_RATIO_FULL) {
+        if (screenRatio == ARGFrame.Ratio.RATIO_FULL) {
             gLViewHeight = deviceHeight
             gLViewWidth = (deviceHeight.toFloat() * previewWidth / previewHeight).toInt()
         } else {
@@ -387,7 +384,7 @@ class CameraActivity : AppCompatActivity() {
         }
 
         /* to align center */
-        if (cameraRatio == AppConfig.CAMERA_RATIO_FULL && gLViewWidth > deviceWidth) {
+        if (screenRatio == ARGFrame.Ratio.RATIO_FULL && gLViewWidth > deviceWidth) {
             view.x = (deviceWidth - gLViewWidth) / 2.toFloat()
         } else {
             view.x = 0.0f
@@ -451,7 +448,7 @@ class CameraActivity : AppCompatActivity() {
         argSession.contents().clear(ARGContents.Type.ARGItem)
 
         val args = Bundle()
-        args.putInt(BeautyFragment.BEAUTY_PARAM1, cameraRatio)
+        args.putSerializable(BeautyFragment.BEAUTY_PARAM1, screenRatio)
         beautyFragment.arguments = args
 
         showSlot(beautyFragment)
@@ -612,11 +609,11 @@ class CameraActivity : AppCompatActivity() {
     private fun takePictureOnGlThread(textureId: Int) {
         isShooting = false
 
-        val ratio: Ratio = when (cameraRatio) {
-            AppConfig.CAMERA_RATIO_FULL -> {
+        val ratio: Ratio = when (screenRatio) {
+            ARGFrame.Ratio.RATIO_FULL -> {
                 Ratio.RATIO_16_9
             }
-            AppConfig.CAMERA_RATIO_4_3 -> {
+            ARGFrame.Ratio.RATIO_4_3 -> {
                 Ratio.RATIO_4_3
             }
             else -> {
@@ -628,7 +625,7 @@ class CameraActivity : AppCompatActivity() {
         sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://$path")))
 
         runOnUiThread {
-            Toast.makeText(this@CameraActivity, "captured a photo.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@CameraActivity, "The file has been saved to your Gallery.", Toast.LENGTH_SHORT).show()
 
             val intent = Intent(this@CameraActivity, ImageViewerActivity::class.java)
             val b = Bundle()
@@ -642,11 +639,11 @@ class CameraActivity : AppCompatActivity() {
         if (!::camera.isInitialized) return
 
         val bitrate = 10 * 1000 * 1000 // 10M
-        val ratio: Ratio = when (cameraRatio) {
-            AppConfig.CAMERA_RATIO_FULL -> {
+        val ratio: Ratio = when (screenRatio) {
+            ARGFrame.Ratio.RATIO_FULL -> {
                 Ratio.RATIO_16_9
             }
-            AppConfig.CAMERA_RATIO_4_3 -> {
+            ARGFrame.Ratio.RATIO_4_3 -> {
                 Ratio.RATIO_4_3
             }
             else -> {
@@ -678,7 +675,7 @@ class CameraActivity : AppCompatActivity() {
                     Uri.parse("file://$videoFilePath")
                 )
             )
-            Toast.makeText(this@CameraActivity, "stop recording.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@CameraActivity, "The file has been saved to your Gallery.", Toast.LENGTH_SHORT).show()
 
             val intent = Intent(this@CameraActivity, PlayerActivity::class.java)
             val b = Bundle()
@@ -793,7 +790,7 @@ class CameraActivity : AppCompatActivity() {
 
             val localWidth = width ?: 0
             val localHeight = height ?: 0
-            val frame = argSession.drawFrame(gl, localWidth, localHeight)
+            val frame = argSession.drawFrame(gl, screenRatio, localWidth, localHeight)
             frame?.let {
                 screenRenderer.draw(it, localWidth, localHeight)
                 if (hasTrigger) updateTriggerStatus(it.itemTriggerFlag)
