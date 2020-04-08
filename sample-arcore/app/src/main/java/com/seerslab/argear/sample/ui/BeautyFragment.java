@@ -47,7 +47,7 @@ public class BeautyFragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mScreenRatio = (ARGFrame.Ratio) getArguments().getSerializable(BEAUTY_PARAM1);
+        mScreenRatio = (ARGFrame.Ratio)getArguments().getSerializable(BEAUTY_PARAM1);
     }
 
     @Nullable

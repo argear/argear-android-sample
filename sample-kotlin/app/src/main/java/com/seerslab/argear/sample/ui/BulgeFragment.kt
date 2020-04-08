@@ -52,7 +52,7 @@ class BulgeFragment : Fragment(),
     override fun onClick(v: View) {
         when (v.id) {
             R.id.close_bulge_button -> activity?.onBackPressed()
-            R.id.clear_bulge_button -> (activity as CameraActivity).closeBulge()
+            R.id.clear_bulge_button -> (activity as CameraActivity).clearBulge()
             R.id.bulge_fun1_button -> (activity as CameraActivity).setBulgeFunType(1)
             R.id.bulge_fun2_button -> (activity as CameraActivity).setBulgeFunType(2)
             R.id.bulge_fun3_button -> (activity as CameraActivity).setBulgeFunType(3)

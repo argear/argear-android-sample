@@ -35,8 +35,7 @@ public class StickerCategoryListAdapter extends RecyclerView.Adapter<StickerCate
 	public void setData(List<CategoryModel> categories){
 		mCategories.clear();
 		for (CategoryModel model : categories) {
-			if (!TextUtils.equals(model.title.toLowerCase(), "filters")
-					&& !TextUtils.equals(model.title.toLowerCase(), "3d sticker")) {
+			if (!TextUtils.equals(model.title.toLowerCase(), "filters")) {
 				mCategories.add(model);
 			}
 		}

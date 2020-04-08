@@ -59,7 +59,7 @@ public class BulgeFragment extends Fragment implements View.OnClickListener {
                 getActivity().onBackPressed();
                 break;
             case R.id.clear_bulge_button:
-                ((CameraActivity)getActivity()).closeBulge();
+                ((CameraActivity)getActivity()).clearBulge();
                 break;
             case R.id.bulge_fun1_button :
                 ((CameraActivity)getActivity()).setBulgeFunType(1);

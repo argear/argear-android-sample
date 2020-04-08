@@ -74,7 +74,6 @@ public class CameraActivity extends AppCompatActivity implements GLSurfaceView.R
     private boolean mFilterVignette = false;
     private boolean mFilterBlur = false;
     private int mFilterLevel = 100;
-    private String mCurrentFilteritemID = null;
     private ItemModel mCurrentStickeritem = null;
     private boolean mHasTrigger = false;
 
@@ -211,10 +210,6 @@ public class CameraActivity extends AppCompatActivity implements GLSurfaceView.R
             closeBeauty();
         }
 
-        if (mBulgeFragment != null && mBulgeFragment.isAdded()) {
-            closeBulge();
-        }
-
         super.onBackPressed();
     }
 
@@ -273,8 +268,8 @@ public class CameraActivity extends AppCompatActivity implements GLSurfaceView.R
             case R.id.camera_switch_button:
                 if (mARCoreSession.isAugmentedFaceMode()) {
                     mDataBinding.surfaceview.setOnTouchListener(mARCoreSession.tapHelper);
-                    mARGSession.contents().clear(ARGContents.Type.ARGItem);
-                    mARGSession.contents().clear(ARGContents.Type.FilterItem);
+                    clearStickers();
+                    clearFilter();
                     mARGSession.pause();
                 } else {
                     // Set up tap listener.
@@ -352,6 +347,7 @@ public class CameraActivity extends AppCompatActivity implements GLSurfaceView.R
 
     private void showStickers(){
         showSlot(mStickerFragment);
+        clearBulge();
         mDataBinding.functionsLayout.setVisibility(View.GONE);
         mDataBinding.shutterLayout.setVisibility(View.GONE);
     }
@@ -366,7 +362,8 @@ public class CameraActivity extends AppCompatActivity implements GLSurfaceView.R
         mDataBinding.functionsLayout.setVisibility(View.GONE);
         mDataBinding.shutterLayout.setVisibility(View.GONE);
 
-        mARGSession.contents().clear(ARGContents.Type.ARGItem);
+        clearStickers();
+        clearBulge();
 
         Bundle args = new Bundle();
         args.putSerializable(BeautyFragment.BEAUTY_PARAM1, ARGFrame.Ratio.RATIO_FULL);
@@ -375,25 +372,20 @@ public class CameraActivity extends AppCompatActivity implements GLSurfaceView.R
     }
 
     private void closeBeauty() {
-        if (mCurrentStickeritem != null) {
-            setItem(ARGContents.Type.ARGItem, mItemDownloadPath + "/" + mCurrentStickeritem.uuid, mCurrentStickeritem);
-        }
+
     }
 
-    private void showBulge(){
+    private void showBulge() {
         mDataBinding.functionsLayout.setVisibility(View.GONE);
         mDataBinding.shutterLayout.setVisibility(View.GONE);
 
-        mARGSession.contents().clear(ARGContents.Type.ARGItem);
+        clearStickers();
 
         showSlot(mBulgeFragment);
     }
 
-    public void closeBulge() {
+    public void clearBulge() {
         mARGSession.contents().clear(ARGContents.Type.Bulge);
-        if (mCurrentStickeritem != null) {
-            setItem(ARGContents.Type.ARGItem, mItemDownloadPath + "/" + mCurrentStickeritem.uuid, mCurrentStickeritem);
-        }
     }
 
     public void setItem(ARGContents.Type type, String path, ItemModel itemModel) {
@@ -451,8 +443,6 @@ public class CameraActivity extends AppCompatActivity implements GLSurfaceView.R
 
     public void setFilter(ItemModel item) {
 
-        mCurrentFilteritemID = item.uuid;
-
         String filePath = mItemDownloadPath + "/" + item.uuid;
         if (getLastUpdateAt(CameraActivity.this) > getFilterUpdateAt(CameraActivity.this, item.uuid)) {
             new FileDeleteAsyncTask(new File(filePath), new FileDeleteAsyncTask.OnAsyncFileDeleteListener() {
@@ -474,7 +464,6 @@ public class CameraActivity extends AppCompatActivity implements GLSurfaceView.R
     }
 
     public void clearFilter() {
-        mCurrentFilteritemID = null;
         mARGSession.contents().clear(ARGContents.Type.FilterItem);
     }
 

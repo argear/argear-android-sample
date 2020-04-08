@@ -2,7 +2,6 @@ package com.seerslab.argear.sample.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.hardware.Camera;
 import android.media.Image;
@@ -59,10 +58,6 @@ import com.seerslab.argear.session.config.ARGConfig;
 import com.seerslab.argear.session.config.ARGInferenceConfig;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -70,7 +65,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 
-public class CameraActivity extends AppCompatActivity{
+public class CameraActivity extends AppCompatActivity {
 
     private static final String TAG = CameraActivity.class.getSimpleName();
 
@@ -88,7 +83,6 @@ public class CameraActivity extends AppCompatActivity{
     private boolean mFilterVignette = false;
     private boolean mFilterBlur = false;
     private int mFilterLevel = 100;
-    private String mCurrentFilteritemID = null;
     private ItemModel mCurrentStickeritem = null;
     private boolean mHasTrigger = false;
 
@@ -458,6 +452,7 @@ public class CameraActivity extends AppCompatActivity{
 
     private void showStickers(){
         showSlot(mStickerFragment);
+        clearBulge();
         mDataBinding.functionsLayout.setVisibility(View.GONE);
         mDataBinding.shutterLayout.setVisibility(View.GONE);
     }
@@ -472,7 +467,8 @@ public class CameraActivity extends AppCompatActivity{
         mDataBinding.functionsLayout.setVisibility(View.GONE);
         mDataBinding.shutterLayout.setVisibility(View.GONE);
 
-        mARGSession.contents().clear(ARGContents.Type.ARGItem);
+        clearStickers();
+        clearBulge();
 
         Bundle args = new Bundle();
         args.putSerializable(BeautyFragment.BEAUTY_PARAM1, mScreenRatio);
@@ -481,25 +477,20 @@ public class CameraActivity extends AppCompatActivity{
     }
 
     private void closeBeauty() {
-        if (mCurrentStickeritem != null) {
-            setItem(ARGContents.Type.ARGItem, mItemDownloadPath + "/" + mCurrentStickeritem.uuid, mCurrentStickeritem);
-        }
+
     }
 
-    private void showBulge(){
+    private void showBulge() {
         mDataBinding.functionsLayout.setVisibility(View.GONE);
         mDataBinding.shutterLayout.setVisibility(View.GONE);
 
-        mARGSession.contents().clear(ARGContents.Type.ARGItem);
+        clearStickers();
 
         showSlot(mBulgeFragment);
     }
 
-    public void closeBulge() {
+    public void clearBulge() {
         mARGSession.contents().clear(ARGContents.Type.Bulge);
-        if (mCurrentStickeritem != null) {
-            setItem(ARGContents.Type.ARGItem, mItemDownloadPath + "/" + mCurrentStickeritem.uuid, mCurrentStickeritem);
-        }
     }
 
     public void setItem(ARGContents.Type type, String path, ItemModel itemModel) {
@@ -557,8 +548,6 @@ public class CameraActivity extends AppCompatActivity{
 
     public void setFilter(ItemModel item) {
 
-        mCurrentFilteritemID = item.uuid;
-
         String filePath = mItemDownloadPath + "/" + item.uuid;
         if (getLastUpdateAt(CameraActivity.this) > getFilterUpdateAt(CameraActivity.this, item.uuid)) {
             new FileDeleteAsyncTask(new File(filePath), new FileDeleteAsyncTask.OnAsyncFileDeleteListener() {
@@ -580,7 +569,6 @@ public class CameraActivity extends AppCompatActivity{
     }
 
     public void clearFilter() {
-        mCurrentFilteritemID = null;
         mARGSession.contents().clear(ARGContents.Type.FilterItem);
     }
 

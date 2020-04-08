@@ -75,7 +75,6 @@ class CameraActivity : AppCompatActivity() {
     private var filterBlur = false
     private var filterLevel = 100
 
-    private var currentFilterItemId: String? = null
     private var currentStickerItem: ItemModel? = null
     private var hasTrigger = false
 
@@ -431,6 +430,7 @@ class CameraActivity : AppCompatActivity() {
 
     private fun showStickers() {
         showSlot(stickerFragment)
+        clearBulge()
         dataBinding.functionsLayout.visibility = View.GONE
         dataBinding.shutterLayout.visibility = View.GONE
     }
@@ -446,6 +446,8 @@ class CameraActivity : AppCompatActivity() {
         dataBinding.shutterLayout.visibility = View.GONE
 
         argSession.contents().clear(ARGContents.Type.ARGItem)
+        clearStickers()
+        clearBulge()
 
         val args = Bundle()
         args.putSerializable(BeautyFragment.BEAUTY_PARAM1, screenRatio)
@@ -455,32 +457,20 @@ class CameraActivity : AppCompatActivity() {
     }
 
     private fun closeBeauty() {
-        currentStickerItem?.let {
-            setItem(
-                ARGContents.Type.ARGItem,
-                itemDownloadPath + "/" + currentStickerItem?.uuid,
-                it
-            )
-        }
+
     }
 
     private fun showBulge() {
         dataBinding.functionsLayout.visibility = View.GONE
         dataBinding.shutterLayout.visibility = View.GONE
 
-        argSession.contents().clear(ARGContents.Type.ARGItem)
+        clearStickers()
+
         showSlot(bulgeFragment)
     }
 
-    fun closeBulge() {
+    fun clearBulge() {
         argSession.contents().clear(ARGContents.Type.Bulge)
-        currentStickerItem?.let {
-            setItem(
-                ARGContents.Type.ARGItem,
-                itemDownloadPath + "/" + currentStickerItem?.uuid,
-                currentStickerItem
-            )
-        }
     }
 
     fun setItem(type: ARGContents.Type?, path: String?, itemModel: ItemModel?) {
@@ -531,7 +521,6 @@ class CameraActivity : AppCompatActivity() {
     }
 
     fun setFilter(item: ItemModel) {
-        currentFilterItemId = item.uuid
         val filePath = itemDownloadPath + "/" + item.uuid
 
         if (getLastUpdateAt(this@CameraActivity) > getFilterUpdateAt(this@CameraActivity, item.uuid ?: "")) {
@@ -553,7 +542,6 @@ class CameraActivity : AppCompatActivity() {
     }
 
     fun clearFilter() {
-        currentFilterItemId = null
         argSession.contents().clear(ARGContents.Type.FilterItem)
     }
 
