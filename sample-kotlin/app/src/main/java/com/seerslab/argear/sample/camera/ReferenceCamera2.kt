@@ -250,7 +250,7 @@ class ReferenceCamera2(
                 ), "video"
             )
             previewSize = getFittedPreviewSize(
-                streamConfigurationMap.getOutputSizes(
+                streamConfigurationMap!!.getOutputSizes(
                     SurfaceTexture::class.java
                 ), 0.75f
             )
@@ -293,7 +293,7 @@ class ReferenceCamera2(
             val sensorOrientation = characteristics.get(
                 CameraCharacteristics.SENSOR_ORIENTATION
             )
-            orientation = getJpegOrientation(facing, deviceRotation, sensorOrientation)
+            orientation = getJpegOrientation(facing, deviceRotation, sensorOrientation!!)
             //mCameraOrientation = getCameraDisplayOrientation(facing, mDeviceRotation, sensorOrientation);
             // Check if the flash is supported.
             val available = characteristics.get(
@@ -324,11 +324,11 @@ class ReferenceCamera2(
             val size = characteristics.get(
                 CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE
             )
-            val w = size.width
+            val w = size!!.width
             val h = size.height
             // FOV (rectilinear) =  2 * arctan (frame size/(focal length * 2))
             horizontalViewAngle =
-                (2 * atan(w / (maxFocus[0] * 2).toDouble())).toFloat()
+                (2 * atan(w / (maxFocus!![0] * 2).toDouble())).toFloat()
             verticalViewAngle =
                 (2 * atan(h / (maxFocus[0] * 2).toDouble())).toFloat()
             Log.i(
@@ -443,7 +443,7 @@ class ReferenceCamera2(
                             CaptureRequest.FLASH_MODE_TORCH
                         )
                         captureSession?.setRepeatingRequest(
-                            previewRequestBuilder?.build(),
+                            previewRequestBuilder?.build()!!,
                             null,
                             null
                         )
@@ -453,7 +453,7 @@ class ReferenceCamera2(
                             CaptureRequest.FLASH_MODE_OFF
                         )
                         captureSession?.setRepeatingRequest(
-                            previewRequestBuilder?.build(),
+                            previewRequestBuilder?.build()!!,
                             null,
                             null
                         )
@@ -659,7 +659,7 @@ class ReferenceCamera2(
                             // Finally, we start displaying the camera preview.
                             previewRequest = previewRequestBuilder?.build()
                             captureSession?.setRepeatingRequest(
-                                previewRequest,
+                                previewRequest!!,
                                 mCaptureCallback, handler
                             )
                             val fpsRange =

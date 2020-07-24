@@ -51,6 +51,7 @@ public class BackgroundRenderer {
   private int quadPositionParam;
   private int quadTexCoordParam;
   private int textureId = -1;
+  private boolean suppressTimestampZeroRendering = true;
 
   public int getTextureId() {
     return textureId;
@@ -110,6 +111,10 @@ public class BackgroundRenderer {
     ShaderUtil.checkGLError(TAG, "Program parameters");
   }
 
+  public void suppressTimestampZeroRendering(boolean suppressTimestampZeroRendering) {
+    this.suppressTimestampZeroRendering = suppressTimestampZeroRendering;
+  }
+
   /**
    * Draws the AR background image. The image will be drawn such that virtual content rendered with
    * the matrices provided by {@link com.google.ar.core.Camera#getViewMatrix(float[], int)} and
@@ -130,7 +135,7 @@ public class BackgroundRenderer {
           quadTexCoords);
     }
 
-    if (frame.getTimestamp() == 0) {
+    if (frame.getTimestamp() == 0 && suppressTimestampZeroRendering) {
       // Suppress rendering if the camera did not produce the first frame yet. This is to avoid
       // drawing possible leftover data from previous sessions if the texture is reused.
       return;
@@ -167,16 +172,16 @@ public class BackgroundRenderer {
     float[] texCoordTransformed;
     switch (cameraToDisplayRotation) {
       case 90:
-        texCoordTransformed = new float[] {1 - u, 1 - v, u, 1 - v, 1 - u, v, u, v};
+        texCoordTransformed = new float[] {1 - u, 1 - v, 1 - u, v, u, 1 - v, u, v};
         break;
       case 180:
-        texCoordTransformed = new float[] {1 - u, v, 1 - u, 1 - v, u, v, u, 1 - v};
+        texCoordTransformed = new float[] {1 - u, v, u, v, 1 - u, 1 - v, u, 1 - v};
         break;
       case 270:
-        texCoordTransformed = new float[] {u, v, 1 - u, v, u, 1 - v, 1 - u, 1 - v};
+        texCoordTransformed = new float[] {u, v, u, 1 - v, 1 - u, v, 1 - u, 1 - v};
         break;
       case 0:
-        texCoordTransformed = new float[] {u, 1 - v, u, v, 1 - u, 1 - v, 1 - u, v};
+        texCoordTransformed = new float[] {u, 1 - v, 1 - u, 1 - v, u, v, 1 - u, v};
         break;
       default:
         throw new IllegalArgumentException("Unhandled rotation: " + cameraToDisplayRotation);
@@ -232,8 +237,19 @@ public class BackgroundRenderer {
     ShaderUtil.checkGLError(TAG, "BackgroundRendererDraw");
   }
 
+  /**
+   * (-1, 1) ------- (1, 1)
+   *   |    \           |
+   *   |       \        |
+   *   |          \     |
+   *   |             \  |
+   * (-1, -1) ------ (1, -1)
+   * Ensure triangles are front-facing, to support glCullFace().
+   * This quad will be drawn using GL_TRIANGLE_STRIP which draws two
+   * triangles: v0->v1->v2, then v2->v1->v3.
+   */
   private static final float[] QUAD_COORDS =
       new float[] {
-        -1.0f, -1.0f, -1.0f, +1.0f, +1.0f, -1.0f, +1.0f, +1.0f,
+        -1.0f, -1.0f, +1.0f, -1.0f, -1.0f, +1.0f, +1.0f, +1.0f,
       };
 }

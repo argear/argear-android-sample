@@ -52,6 +52,11 @@ android {
     dataBinding {
         enabled = true
     }
+
+    packagingOptions {
+        pickFirst 'lib/arm64-v8a/*'
+        pickFirst 'lib/armeabi-v7a/*'
+    }
 }
 
 repositories {
@@ -85,7 +90,7 @@ dependencies {
     implementation "de.javagl:obj:$javaglVersion"
 
     // ARGear
-    implementation (name: 'argear', ext: 'aar')
+    implementation (name: 'argear-renderer', ext: 'aar')
 
     // Build off of TensorFlow Lite
     implementation 'org.tensorflow:tensorflow-lite:1.14.0'

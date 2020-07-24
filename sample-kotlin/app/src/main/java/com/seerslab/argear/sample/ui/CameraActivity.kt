@@ -6,6 +6,7 @@ import android.graphics.Point
 import android.hardware.Camera
 import android.media.Image
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
@@ -39,6 +40,7 @@ import com.seerslab.argear.sample.rendering.CameraTexture
 import com.seerslab.argear.sample.rendering.ScreenRenderer
 import com.seerslab.argear.sample.util.FileDeleteAsyncTask
 import com.seerslab.argear.sample.util.FileDeleteAsyncTask.OnAsyncFileDeleteListener
+import com.seerslab.argear.sample.util.MediaStoreUtil
 import com.seerslab.argear.sample.util.PreferenceUtil
 import com.seerslab.argear.sample.viewmodel.ContentsViewModel
 import com.seerslab.argear.session.*
@@ -68,6 +70,7 @@ class CameraActivity : AppCompatActivity() {
 
     private var itemDownloadPath: String? = null
     private var mediaPath: String? = null
+    private var innerMediaPath: String? = null
     private var videoFilePath: String? = null
 
     private var isShooting = false
@@ -141,10 +144,25 @@ class CameraActivity : AppCompatActivity() {
         if (!dir.exists()) {
             dir.mkdirs()
         }
-
+	innerMediaPath = getExternalFilesDir(null)?.absolutePath + "/ARGearMedia"
         initRatioUI()
+	clearTempMediaFiles()
     }
 
+    // wrong path wanning
+    private fun clearTempMediaFiles() {
+        FileDeleteAsyncTask(
+            File(innerMediaPath),
+            object : OnAsyncFileDeleteListener {
+                override fun processFinish(result: Any?) {
+                    val dir = File(innerMediaPath)
+                    if (!dir.exists()) {
+                        dir.mkdirs()
+                    }
+                }
+            }).execute()
+    }
+    
     override fun onResume() {
         super.onResume()
         // Check Permission and initialize SDK
@@ -608,7 +626,13 @@ class CameraActivity : AppCompatActivity() {
                 Ratio.RATIO_1_1
             }
         }
-        val path = mediaPath + "/" + System.currentTimeMillis() + ".jpg"
+
+        val path = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            innerMediaPath + "/" + System.currentTimeMillis() + ".jpg"
+        } else {
+            mediaPath + "/" + System.currentTimeMillis() + ".jpg"
+        }
+
         argMedia.takePicture(textureId, path, ratio)
         sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://$path")))
 
@@ -620,6 +644,10 @@ class CameraActivity : AppCompatActivity() {
             b.putString(ImageViewerActivity.INTENT_IMAGE_URI, path)
             intent.putExtras(b)
             startActivity(intent)
+	    
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    MediaStoreUtil.writeImageToMediaStoreForQ(this, path)
+                }
         }
     }
 
@@ -643,7 +671,13 @@ class CameraActivity : AppCompatActivity() {
             Toast.makeText(this, "Error recording. : camera previewSize null", Toast.LENGTH_SHORT).show()
             return
         }
-        videoFilePath = mediaPath + "/" + System.currentTimeMillis() + ".mp4"
+
+        videoFilePath = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            innerMediaPath + "/" + System.currentTimeMillis() + ".mp4"
+        } else {
+            mediaPath + "/" + System.currentTimeMillis() + ".mp4"
+        }
+
         argMedia.initRecorder(
             videoFilePath, previewSize[0], previewSize[1], bitrate,
             false, false, false, ratio
@@ -671,6 +705,11 @@ class CameraActivity : AppCompatActivity() {
             intent.putExtras(b)
             startActivity(intent)
 
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                videoFilePath?.let {
+                    MediaStoreUtil.writeVideoToMediaStoreForQ(this@CameraActivity, it)
+                }
+            }
             dataBinding.shutterButton.isEnabled = true
         }, 500)
     }

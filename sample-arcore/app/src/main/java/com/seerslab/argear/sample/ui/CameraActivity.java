@@ -291,10 +291,7 @@ public class CameraActivity extends AppCompatActivity implements GLSurfaceView.R
         // create ARGear session
         ARGConfig argConfig
                 = new ARGConfig(AppConfig.API_URL, AppConfig.API_KEY, AppConfig.SECRET_KEY, AppConfig.AUTH_KEY);
-        Set<ARGInferenceConfig.Feature> inferenceConfig
-                = EnumSet.of(ARGInferenceConfig.Feature.EXT_ARCORE_FACE_TRACKING);
-
-        mARGSession = new ARGSession(this, argConfig, inferenceConfig);
+        mARGSession = new ARGSession(this, argConfig);
         //mARGMedia = new ARGMedia(mARGSession);
 
         setBeauty(mBeautyItemData.getBeautyValues());

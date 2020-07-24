@@ -10,13 +10,12 @@ buildscript {
 
 android {
     compileSdkVersion compile_sdkVersion
-    buildToolsVersion "28.0.3"
     defaultConfig {
         applicationId "com.seerslab.argear.sample"
         minSdkVersion min_sdkVersion
         targetSdkVersion target_sdkVersion
         versionCode 1
-        versionName "0.0.2"
+        versionName "0.0.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ndk {
             abiFilters 'armeabi-v7a', 'arm64-v8a'

@@ -6,6 +6,7 @@ import android.graphics.Point;
 import android.hardware.Camera;
 import android.media.Image;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -46,6 +47,7 @@ import com.seerslab.argear.sample.network.DownloadAsyncTask;
 import com.seerslab.argear.sample.rendering.CameraTexture;
 import com.seerslab.argear.sample.rendering.ScreenRenderer;
 import com.seerslab.argear.sample.util.FileDeleteAsyncTask;
+import com.seerslab.argear.sample.util.MediaStoreUtil;
 import com.seerslab.argear.sample.util.PreferenceUtil;
 import com.seerslab.argear.sample.viewmodel.ContentsViewModel;
 import com.seerslab.argear.session.ARGAuth;
@@ -59,6 +61,7 @@ import com.seerslab.argear.session.config.ARGInferenceConfig;
 
 import java.io.File;
 import java.util.EnumSet;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -77,6 +80,7 @@ public class CameraActivity extends AppCompatActivity {
 
     private String mItemDownloadPath;
     private String mMediaPath;
+    private String mInnerMediaPath;
     private String mVideoFilePath;
     private boolean mIsShooting = false;
 
@@ -148,8 +152,23 @@ public class CameraActivity extends AppCompatActivity {
         if (!dir.exists()) {
             dir.mkdirs();
         }
+        mInnerMediaPath =  Objects.requireNonNull(getExternalFilesDir(null)).getAbsolutePath() + "/ARGearMedia";
 
         initRatioUI();
+        clearTempMediaFiles();
+    }
+
+    private void clearTempMediaFiles() {
+        new FileDeleteAsyncTask(new File(mInnerMediaPath), new FileDeleteAsyncTask.OnAsyncFileDeleteListener() {
+            @Override
+            public void processFinish(Object result) {
+                File dir = new File(mInnerMediaPath);
+                if (!dir.exists()) {
+                    boolean r = dir.mkdir();
+                    Log.e(TAG, "");
+                }
+            }
+        }).execute();
     }
 
     @Override
@@ -647,7 +666,13 @@ public class CameraActivity extends AppCompatActivity {
             ratio = ARGMedia.Ratio.RATIO_1_1;
         }
 
-        String path = mMediaPath + "/" + System.currentTimeMillis() + ".jpg";
+        String path;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            path = mInnerMediaPath + "/" + System.currentTimeMillis() + ".jpg";
+        } else {
+            path = mMediaPath + "/" + System.currentTimeMillis() + ".jpg";
+        }
+
         mARGMedia.takePicture(textureId, path, ratio);
         sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://"+path)));
 
@@ -661,6 +686,10 @@ public class CameraActivity extends AppCompatActivity {
                 b.putString(ImageViewerActivity.INTENT_IMAGE_URI, path);
                 intent.putExtras(b);
                 startActivity(intent);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    MediaStoreUtil.writeImageToMediaStoreForQ(CameraActivity.this, path, Environment.DIRECTORY_DCIM+"/ARGEAR");
+                }
             }
         });
     }
@@ -682,10 +711,21 @@ public class CameraActivity extends AppCompatActivity {
         }
 
         int [] previewSize = mCamera.getPreviewSize();
-        mVideoFilePath = mMediaPath + "/" + System.currentTimeMillis() + ".mp4";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            mVideoFilePath = mInnerMediaPath + "/" + System.currentTimeMillis() + ".mp4";
+        } else {
+            mVideoFilePath = mMediaPath + "/" + System.currentTimeMillis() + ".mp4";
+        }
 
-        mARGMedia.initRecorder(mVideoFilePath, previewSize[0], previewSize[1], bitrate,
-                false, false, false, ratio);
+        mARGMedia.initRecorder(
+                mVideoFilePath,
+                previewSize[0],
+                previewSize[1],
+                bitrate,
+                false,
+                false,
+                false,
+                ratio);
         mARGMedia.startRecording();
 
         Toast.makeText(this, "start recording.", Toast.LENGTH_SHORT).show();
@@ -707,6 +747,10 @@ public class CameraActivity extends AppCompatActivity {
                 b.putString(PlayerActivity.INTENT_URI, mVideoFilePath);
                 intent.putExtras(b);
                 startActivity(intent);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    MediaStoreUtil.writeVideoToMediaStoreForQ(CameraActivity.this, mVideoFilePath, Environment.DIRECTORY_DCIM+"/ARGEAR");
+                }
 
                 mDataBinding.shutterButton.setEnabled(true);
             }

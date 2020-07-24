@@ -1,7 +1,7 @@
 ext {
-    compile_sdkVersion = 28
+    compile_sdkVersion = 29
     min_sdkVersion = 23
-    target_sdkVersion = 28
+    target_sdkVersion = 29
 
     appcompactVersion = "1.1.0"
     coreKtxVersion = "1.1.0"

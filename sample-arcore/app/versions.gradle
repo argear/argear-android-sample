@@ -12,6 +12,6 @@ ext {
     okhttpLoggingInterceptorVersion = "3.10.0"
     gsonVersion = "2.8.5"
 
-    arcoreVersion = "1.13.0"
+    arcoreVersion = "1.17.0"
     javaglVersion = "0.2.1"
 }
