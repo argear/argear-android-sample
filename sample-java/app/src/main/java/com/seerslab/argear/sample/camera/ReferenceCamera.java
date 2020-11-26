@@ -29,11 +29,9 @@ public abstract class ReferenceCamera {
                        boolean isFrontFacing,
                        float fps);
         // region - for camera api 1
-        void updateFaceRects(Camera.Face[] faces);
         void feedRawData(byte[] data);
         // endregion
         // region - for camera api 2
-        void updateFaceRects(int numFaces, int[][] bbox);
         void feedRawData(Image data);
         // endregion
     }

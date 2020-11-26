@@ -239,7 +239,7 @@ class CameraActivity : AppCompatActivity() {
         )
 
         val inferenceConfig: Set<Feature> = EnumSet.of(
-            Feature.FACE_HIGH_TRACKING
+            Feature.FACE_MESH_TRACKING
         )
 
         // Session Init
@@ -856,20 +856,12 @@ class CameraActivity : AppCompatActivity() {
         }
 
         // region - for camera api 1
-        override fun updateFaceRects(faces: Array<Camera.Face>?) {
-            argSession.updateFaceRects(faces)
-        }
-
         override fun feedRawData(data: ByteArray?) {
             argSession.feedRawData(data)
         }
-
         // endregion
-        // region - for camera api 2
-        override fun updateFaceRects(numFaces: Int, bbox: Array<IntArray>?) {
-            argSession.updateFaceRects(numFaces, bbox)
-        }
 
+        // region - for camera api 2
         override fun feedRawData(data: Image?) {
             argSession.feedRawData(data)
         } // endregion

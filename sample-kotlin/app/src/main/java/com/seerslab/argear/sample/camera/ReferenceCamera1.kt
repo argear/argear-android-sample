@@ -468,10 +468,7 @@ class ReferenceCamera1(context: Context, listener: CameraListener?) :
         camera.addCallbackBuffer(createPreviewBuffer(innerPreviewSize))
         camera.addCallbackBuffer(createPreviewBuffer(innerPreviewSize))
         camera.addCallbackBuffer(createPreviewBuffer(innerPreviewSize))
-        val maxAmountOffaces = camera.parameters.maxNumDetectedFaces
-        if (maxAmountOffaces > 0) {
-            camera.setFaceDetectionListener(FaceDetecionCallBack())
-        }
+
         val frameRateRange = IntArray(2)
         parameters.getPreviewFpsRange(frameRateRange)
         val fps = frameRateRange[1] / 1000.0f
@@ -613,18 +610,6 @@ class ReferenceCamera1(context: Context, listener: CameraListener?) :
     // ==============================================================================================
     // Frame processing
     // ==============================================================================================
-    private inner class FaceDetecionCallBack :
-        FaceDetectionListener {
-        override fun onFaceDetection(
-            faces: Array<Face>,
-            camera: Camera
-        ) { /*
-             * 카메라 HW 에서 전달되는 얼굴 정보를 SDK 에 전달 합니다
-             */
-            listener?.updateFaceRects(faces)
-        }
-    }
-
     /** Called when the camera has a new preview frame.  */
     private inner class CameraPreviewCallback : PreviewCallback {
         override fun onPreviewFrame(

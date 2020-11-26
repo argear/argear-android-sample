@@ -725,35 +725,12 @@ class ReferenceCamera2(
     }
 
     private val mCaptureCallback: CaptureCallback = object : CaptureCallback() {
-        private fun process(result: CaptureResult) {
-            val mode = result.get(CaptureResult.STATISTICS_FACE_DETECT_MODE)
-            val faces =
-                result.get(
-                    CaptureResult.STATISTICS_FACES
-                )
-            if (faces != null && mode != null) {
-                if (faces.isNotEmpty()) {
-                    //Log.e(TAG, "face detected = " + faces.length);
-                    val bbox = Array(faces.size) { IntArray(4) }
-                    var rect: Rect
-                    for (i in faces.indices) {
-                        rect = faces[i].bounds
-                        bbox[i][0] = rect.left * previewSize[0] / cameraSensorResolution!!.width
-                        bbox[i][1] = rect.top * previewSize[1] / cameraSensorResolution!!.height
-                        bbox[i][2] = rect.right * previewSize[0] / cameraSensorResolution!!.width
-                        bbox[i][3] = rect.bottom * previewSize[1] / cameraSensorResolution!!.height
-                    }
-                    listener.updateFaceRects(faces.size, bbox)
-                }
-            }
-        }
 
         override fun onCaptureProgressed(
             session: CameraCaptureSession,
             request: CaptureRequest,
             partialResult: CaptureResult
         ) {
-            process(partialResult)
         }
 
         override fun onCaptureCompleted(
@@ -761,7 +738,6 @@ class ReferenceCamera2(
             request: CaptureRequest,
             result: TotalCaptureResult
         ) {
-            process(result)
         }
     }
 

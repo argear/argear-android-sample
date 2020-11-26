@@ -750,39 +750,16 @@ public class ReferenceCamera2 extends ReferenceCamera {
     private CameraCaptureSession.CaptureCallback mCaptureCallback
             = new CameraCaptureSession.CaptureCallback() {
 
-        private void process(CaptureResult result) {
-            Integer mode = result.get(CaptureResult.STATISTICS_FACE_DETECT_MODE);
-            Face[] faces = result.get(CaptureResult.STATISTICS_FACES);
-            if(faces != null && mode != null) {
-                if (faces.length > 0) {
-                    //Log.e(TAG, "face detected = " + faces.length);
-                    int[][] bbox = new int[faces.length][4];
-                    Rect rect;
-                    for (int i = 0; i < faces.length; ++i) {
-                        rect = faces[i].getBounds();
-                        bbox[i][0] = rect.left*mPreviewSize[0]/mCameraSensorResolution.getWidth();
-                        bbox[i][1] = rect.top*mPreviewSize[1]/mCameraSensorResolution.getHeight();
-                        bbox[i][2] = rect.right*mPreviewSize[0]/mCameraSensorResolution.getWidth();
-                        bbox[i][3] = rect.bottom*mPreviewSize[1]/mCameraSensorResolution.getHeight();
-                    }
-
-                    listener.updateFaceRects(faces.length, bbox);
-                }
-            }
-        }
-
         @Override
         public void onCaptureProgressed(CameraCaptureSession session,
                                         CaptureRequest request,
                                         CaptureResult partialResult) {
-            process(partialResult);
         }
 
         @Override
         public void onCaptureCompleted(@NonNull CameraCaptureSession session,
                                        @NonNull CaptureRequest request,
                                        @NonNull TotalCaptureResult result) {
-            process(result);
         }
     };
 

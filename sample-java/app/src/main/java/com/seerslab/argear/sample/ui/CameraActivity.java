@@ -190,7 +190,7 @@ public class CameraActivity extends AppCompatActivity {
             ARGConfig config
                     = new ARGConfig(AppConfig.API_URL, AppConfig.API_KEY, AppConfig.SECRET_KEY, AppConfig.AUTH_KEY);
             Set<ARGInferenceConfig.Feature> inferenceConfig
-                    = EnumSet.of(ARGInferenceConfig.Feature.FACE_HIGH_TRACKING);
+                    = EnumSet.of(ARGInferenceConfig.Feature.FACE_MESH_TRACKING);
 
             mARGSession = new ARGSession(this, config, inferenceConfig);
             mARGMedia = new ARGMedia(mARGSession);
@@ -876,22 +876,12 @@ public class CameraActivity extends AppCompatActivity {
 
         // region - for camera api 1
         @Override
-        public void updateFaceRects(Camera.Face[] faces) {
-            mARGSession.updateFaceRects(faces);
-        }
-
-        @Override
         public void feedRawData(byte[] data) {
             mARGSession.feedRawData(data);
         }
         // endregion
 
         // region - for camera api 2
-        @Override
-        public void updateFaceRects(int numFaces, int[][] bbox) {
-            mARGSession.updateFaceRects(numFaces, bbox);
-        }
-
         @Override
         public void feedRawData(Image data) {
             mARGSession.feedRawData(data);

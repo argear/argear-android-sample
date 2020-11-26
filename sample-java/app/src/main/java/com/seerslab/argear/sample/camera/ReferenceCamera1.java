@@ -387,12 +387,6 @@ public class ReferenceCamera1 extends ReferenceCamera {
         camera.addCallbackBuffer(createPreviewBuffer(previewSize));
         camera.addCallbackBuffer(createPreviewBuffer(previewSize));
 
-        int maxAmountOffaces = camera.getParameters().getMaxNumDetectedFaces();
-        if(maxAmountOffaces > 0){
-            camera.setFaceDetectionListener(new FaceDetecionCallBack());
-
-        }
-
         int[] frameRateRange = new int[2];
         parameters.getPreviewFpsRange(frameRateRange);
         final float fps = frameRateRange[1] / 1000.0f;
@@ -671,17 +665,6 @@ public class ReferenceCamera1 extends ReferenceCamera {
     // ==============================================================================================
     // Frame processing
     // ==============================================================================================
-
-    private class FaceDetecionCallBack implements FaceDetectionListener {
-        @Override
-        public void onFaceDetection(Face[] faces, Camera camera) {
-            /*
-             * 카메라 HW 에서 전달되는 얼굴 정보를 SDK 에 전달 합니다
-             */
-            listener.updateFaceRects(faces);
-        }
-    }
-
     /** Called when the camera has a new preview frame. */
     private class CameraPreviewCallback implements Camera.PreviewCallback {
         @Override

@@ -31,11 +31,9 @@ abstract class ReferenceCamera {
             fps: Float
         )
         // region - for camera api 1
-        fun updateFaceRects(faces: Array<Camera.Face>?)
         fun feedRawData(data: ByteArray?)
         // endregion
         // region - for camera api 2
-        fun updateFaceRects(numFaces: Int, bbox: Array<IntArray>?)
         fun feedRawData(data: Image?)
         // endregion
     }
