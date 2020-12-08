@@ -80,6 +80,7 @@ class CameraActivity : AppCompatActivity() {
 
     private var currentStickerItem: ItemModel? = null
     private var hasTrigger = false
+    private var useARGSessionDestroy = false
 
     private var deviceWidth = 0
     private var deviceHeight = 0
@@ -192,7 +193,7 @@ class CameraActivity : AppCompatActivity() {
         super.onDestroy()
         if (::camera.isInitialized && ::argSession.isInitialized) {
             camera.destroy()
-            argSession.destroy()
+            useARGSessionDestroy = true
         }
     }
 
@@ -824,8 +825,8 @@ class CameraActivity : AppCompatActivity() {
                 if (argMedia.isRecording) argMedia.updateFrame(it.textureId)
                 if (isShooting) takePictureOnGlThread(it.textureId)
 
-                // getRawData
-                // val bf = frame.getRawData(0, false, false)
+                if(useARGSessionDestroy)
+                    argSession.destroy()
             }
         }
     }

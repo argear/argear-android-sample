@@ -89,6 +89,7 @@ public class CameraActivity extends AppCompatActivity {
     private int mFilterLevel = 100;
     private ItemModel mCurrentStickeritem = null;
     private boolean mHasTrigger = false;
+    private boolean mUseARGSessionDestroy = false;
 
     private int mDeviceWidth = 0;
     private int mDeviceHeight = 0;
@@ -226,7 +227,7 @@ public class CameraActivity extends AppCompatActivity {
 
         if (mARGSession != null) {
             mCamera.destroy();
-            mARGSession.destroy();
+            mUseARGSessionDestroy = true;
         }
     }
 
@@ -853,9 +854,8 @@ public class CameraActivity extends AppCompatActivity {
                 if (mIsShooting) takePictureOnGlThread(frame.getTextureId());
             }
 
-            // getRawData
-            // ByteBuffer bf = frame.getRawData(0, false, false);
-            // if (bf == null) return;
+            if(mUseARGSessionDestroy)
+                mARGSession.destroy();
         }
     };
     // endregion

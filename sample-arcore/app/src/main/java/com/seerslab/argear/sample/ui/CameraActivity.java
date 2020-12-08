@@ -76,6 +76,7 @@ public class CameraActivity extends AppCompatActivity implements GLSurfaceView.R
     private int mFilterLevel = 100;
     private ItemModel mCurrentStickeritem = null;
     private boolean mHasTrigger = false;
+    private boolean mUseARGSessionDestroy = false;
 
     private FragmentManager mFragmentManager;
     private FilterFragment mFilterFragment;
@@ -186,7 +187,7 @@ public class CameraActivity extends AppCompatActivity implements GLSurfaceView.R
 
         mDataBinding.surfaceview.onPause();
 
-        mARGSession.destroy();
+        mUseARGSessionDestroy = true;
     }
 
     @Override
@@ -716,6 +717,9 @@ public class CameraActivity extends AppCompatActivity implements GLSurfaceView.R
             mScreenRenderer.draw(argFrame, mScreenWidth, mScreenHeight, mTextureSize.getWidth(), mTextureSize.getHeight());
 
             if (mHasTrigger) updateTriggerStatus(argFrame.getItemTriggerFlag());
+
+            if(mUseARGSessionDestroy)
+                mARGSession.destroy();
         }
     }
 }
